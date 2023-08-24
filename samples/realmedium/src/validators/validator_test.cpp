@@ -49,11 +49,11 @@ UTEST(UserValidation, RegisterValidation) {
 }
 
 UTEST(CommentValidation, CreateCommentValidation) {
-  using real_medium::dto::AddCommentDTO;
+  using real_medium::dto::AddComment;
 
-  UEXPECT_NO_THROW(validate(AddCommentDTO{"some body"}));
-  UEXPECT_THROW(validate(AddCommentDTO{std::nullopt}), ValidationException);
-  UEXPECT_THROW(validate(AddCommentDTO{""}), ValidationException);
+  UEXPECT_NO_THROW(validate(AddComment{"some body"}));
+  UEXPECT_THROW(validate(AddComment{std::nullopt}), ValidationException);
+  UEXPECT_THROW(validate(AddComment{""}), ValidationException);
 }
 
 UTEST(ArticleValidation, CreateArticleValidation) {

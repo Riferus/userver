@@ -69,11 +69,48 @@ CREATE TABLE IF NOT EXISTS real_medium.comments(
         CONSTRAINT fk_author FOREIGN KEY (user_id) REFERENCES real_medium.users(user_id) ON DELETE CASCADE
 );
 
+
+
+CREATE TYPE real_medium.user AS (
+        user_id text,
+        username varchar(255),
+        email text,
+        bio TEXT,
+        image VARCHAR(255),
+        password_hash TEXT
+);
+
+CREATE TYPE real_medium.full_article_info AS (
+        article_id text,
+        title varchar(255),
+        slug  varchar(255),
+        description text,
+        body text,
+        tags VARCHAR(255)[],
+        created_at TIMESTAMP WITH TIME ZONE,
+        updated_at TIMESTAMP WITH TIME ZONE,
+        article_favorited_by_user_ids  TEXT[],
+        article_favorited_by_usernames TEXT[],
+        author_followed_by_user_ids    TEXT[],
+        author real_medium.user
+);
+
 CREATE TYPE real_medium.profile AS (
         username varchar( 255),
         bio TEXT,
         image VARCHAR(255),
         FOLLOWING BOOL);
+
+CREATE TYPE real_medium.comment AS (
+        id int,
+        created_at TIMESTAMP WITH TIME ZONE,
+        updated_at TIMESTAMP WITH TIME ZONE,
+        body TEXT,
+        user_id varchar( 255),
+        article_id varchar( 255),
+        author real_medium.profile,
+        following VARCHAR(255)[]
+    );
 
 CREATE TYPE real_medium.tagged_article_with_author_profile AS (
         article_id text,
@@ -367,21 +404,8 @@ BEGIN
         real_medium.get_profile(user_id, _user_id)
 FROM
         real_medium.articles
-WHERE(_tag IS NULL
-                OR article_id IN(
-                        SELECT
-                                article_id
-                        FROM
-                                real_medium.article_tag
-                        WHERE
-                                tag_id IN(
-                                        SELECT
-                                                tag_id
-                                        FROM
-                                                real_medium.tag_list
-                                        WHERE
-                                                tag_name = _tag)))
-                AND(_author IS NULL
+WHERE
+                (_author IS NULL
                         OR article_id IN(
                                 SELECT
                                         article_id
@@ -399,6 +423,20 @@ WHERE(_tag IS NULL
                                         INNER JOIN real_medium.favorites USING(user_id)
                                 WHERE
                                         username = _favorited))
+AND(_tag IS NULL
+                OR article_id IN(
+                        SELECT
+                                article_id
+                        FROM
+                                real_medium.article_tag
+                        WHERE
+                                tag_id IN(
+                                        SELECT
+                                                tag_id
+                                        FROM
+                                                real_medium.tag_list
+                                        WHERE
+                                                tag_name = _tag)))
         ORDER BY
                 created_at DESC
         LIMIT _limit OFFSET _offset;
@@ -409,4 +447,5 @@ LANGUAGE plpgsql;
 CREATE INDEX IF NOT EXISTS idx_createdat ON real_medium.articles(created_at DESC);
 
 CREATE INDEX IF NOT EXISTS idx_tagname ON real_medium.tag_list(tag_name);
+
 

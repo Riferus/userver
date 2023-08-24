@@ -51,7 +51,7 @@ void validate(const dto::UserUpdateDTO& dto) {
     throw utils::error::ValidationException("password", "Invalid field");
   }
 }
-void validate(const dto::AddCommentDTO& dto) {
+void validate(const dto::AddComment& dto) {
   if (!dto.body) {
     throw utils::error::ValidationException("body", "Field is missing");
   }

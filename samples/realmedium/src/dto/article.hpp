@@ -10,6 +10,8 @@
 
 namespace real_medium::dto {
 struct Article final {
+  static Article Parse(const models::TaggedArticleWithProfile& model);
+  static Article Parse(const models::FullArticleInfo&info, std::optional<std::string> authUserId);
   std::string slug;
   std::string title;
   std::string body;
@@ -23,6 +25,7 @@ struct Article final {
 };
 
 struct CreateArticleRequest final {
+  static CreateArticleRequest Parse(const userver::formats::json::Value& json);
   std::optional<std::string> title;
   std::optional<std::string> description;
   std::optional<std::string> body;
@@ -30,15 +33,15 @@ struct CreateArticleRequest final {
 };
 
 struct UpdateArticleRequest final {
+  static UpdateArticleRequest Parse(const userver::formats::json::Value& json,
+                             const userver::server::http::HttpRequest& request);
   std::optional<std::string> title;
   std::optional<std::string> description;
   std::optional<std::string> body;
 };
 
-CreateArticleRequest Parse(const userver::formats::json::Value& json,
-                           userver::formats::parse::To<CreateArticleRequest>);
 
-UpdateArticleRequest Parse(const userver::formats::json::Value& json,
-                           userver::formats::parse::To<UpdateArticleRequest>);
-
+userver::formats::json::Value Serialize(
+    const Article& data,
+    userver::formats::serialize::To<userver::formats::json::Value>);
 }  // namespace real_medium::dto

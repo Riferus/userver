@@ -21,8 +21,8 @@ userver::formats::json::Value Handler::HandleRequestJsonThrow(
     const userver::server::http::HttpRequest& request,
     const userver::formats::json::Value& request_json,
     userver::server::request::RequestContext& context) const {
-  auto createArticleRequest =
-      request_json["article"].As<dto::CreateArticleRequest>();
+  dto::CreateArticleRequest createArticleRequest;
+  createArticleRequest = dto::CreateArticleRequest::Parse(request_json["article"]);
   try {
     validator::validate(createArticleRequest);
   } catch (const real_medium::utils::error::ValidationException& ex) {

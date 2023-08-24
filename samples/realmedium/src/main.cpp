@@ -31,6 +31,8 @@
 #include "handlers/articles/articles_slug_get.hpp"
 #include "handlers/articles/articles_slug_put.hpp"
 #include "handlers/articles/articles_unfavorite.hpp"
+#include "cache/articles_cache.hpp"
+#include "cache/comments_cache.hpp"
 #include "handlers/articles/feed_articles.hpp"
 
 using namespace real_medium::handlers;
@@ -43,10 +45,11 @@ int main(int argc, char* argv[]) {
       userver::components::MinimalServerComponentList()
           .Append<userver::server::handlers::Ping>()
           .Append<userver::components::TestsuiteSupport>()
+          .Append<real_medium::cache::articles_cache::ArticlesCache>()
+          .Append<real_medium::cache::comments_cache::CommentsCache>()
           .Append<userver::components::HttpClient>()
           .Append<userver::components::Postgres>("realmedium-database")
-          .Append<userver::clients::dns::
-                      Component>()  // real_medium::handlers::users_login::post
+          .Append<userver::clients::dns::Component>()  // real_medium::handlers::users_login::post
           .Append<userver::server::handlers::TestsControl>()
           .Append<real_medium::handlers::users::put::Handler>()
           .Append<real_medium::handlers::users::get::Handler>()

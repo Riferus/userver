@@ -12,7 +12,7 @@ void validate(const dto::UserRegistrationDTO& dto);
 
 void validate(const dto::UserUpdateDTO& dto);
 
-void validate(const dto::AddCommentDTO& dto);
+void validate(const dto::AddComment& dto);
 
 void validate(const dto::CreateArticleRequest& dto);
 

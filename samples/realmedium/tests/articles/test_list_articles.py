@@ -1,4 +1,5 @@
 import pytest
+import time
 from http import HTTPStatus
 
 from endpoints import register_user, create_article, follow_user, list_articles, favourite_article
@@ -42,6 +43,7 @@ async def test_list_articles_unauthorized(service_client):
         article.favoritesCount = 1
         assert response.status == HTTPStatus.OK
 
+    await service_client.invalidate_caches()
     response = await list_articles(service_client, None, tag, author_profile.username, another_user.username, 2, 0)
     assert response.status == HTTPStatus.OK
     assert validate_articles(list_articles_result, response)
@@ -87,6 +89,7 @@ async def test_list_articles(service_client):
     assert response.status == HTTPStatus.OK
     author_profile.following = True
 
+    await service_client.invalidate_caches()
     response = await list_articles(service_client, user_token, tag, author_profile.username, user.username, 2, 0)
     assert response.status == HTTPStatus.OK
     assert validate_articles(list_articles_result, response)

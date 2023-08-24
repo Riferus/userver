@@ -9,11 +9,34 @@
 #include <vector>
 #include "../db/types.hpp"
 #include "profile.hpp"
+#include "user.hpp"
 
 namespace real_medium::models {
+  using ArticleId=std::string;
+
+struct FullArticleInfo{
+    ArticleId articleId;
+    std::string title;
+    std::string slug;
+    std::string description;
+    std::string body;
+    std::unordered_set<std::string> tags;
+    userver::storages::postgres::TimePointTz createdAt;
+    userver::storages::postgres::TimePointTz updatedAt;
+    std::unordered_set<std::string> articleFavoritedByUserIds;
+    std::unordered_set<std::string> articleFavoritedByUsernames;
+    std::unordered_set<std::string> authorFollowedByUsersIds;
+    User authorInfo;
+
+    auto Introspect() {
+      return std::tie(articleId, title, slug, description, body, tags,
+                      createdAt,updatedAt,articleFavoritedByUserIds,
+                      articleFavoritedByUsernames,authorFollowedByUsersIds,authorInfo);
+    }
+};
 
 struct TaggedArticleWithProfile {
-  std::string articleId;
+  ArticleId articleId;
   std::string title;
   std::string slug;
   std::string body;
@@ -46,4 +69,11 @@ struct CppToUserPg<real_medium::models::TaggedArticleWithProfile> {
       real_medium::sql::types::kTaggedArticleWithProfile.data()};
 };
 
-}  // namespace userver::storages::postgres::io
+template <>
+struct CppToUserPg<real_medium::models::FullArticleInfo> {
+  static constexpr DBTypeName postgres_name{
+    real_medium::sql::types::kFullArticleInfo.data()
+  };
+};
+
+} // namespace userver::storages::postgres::io
